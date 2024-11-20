@@ -81,7 +81,7 @@ Example contents of `database_population_log.txt`:
 2024-11-20 14:08:03,973 - MySQL connection closed
 
 ```
-This addition makes it clear that a log file will be generated and explains its purpose. Let me know if further refinements are needed!
+This addition makes it clear that a log file will be generated and explains its purpose. 
 
 
 ## Additional Notes
