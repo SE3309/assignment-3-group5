@@ -1,4 +1,4 @@
-USE sys;
+USE my_database;
 
 -- Create Driver Table
 CREATE TABLE Driver(
@@ -13,7 +13,7 @@ age						INT,
 salary					DECIMAL (10,2), 
 employmentDate			DATE,
 workingStatus			ENUM ('ACTIVE','INACTIVE','ON LEAVE') DEFAULT 'ACTIVE',
-truckOwnedorAssigned	ENUM ('OWNNED','ASSIGNED') DEFAULT 'ASSIGNED',
+truckOwnedorAssigned	ENUM ('OWNED','ASSIGNED') DEFAULT 'ASSIGNED',
 PRIMARY KEY (driverID)
 );
 
@@ -54,7 +54,7 @@ licencePlateNumber		VARCHAR(10) UNIQUE,
 VIN						VARCHAR(17) UNIQUE, -- VIN numbers are 17 characters
 makeModelYear			VARCHAR(100),
 maxTowWeight			DECIMAL,
-insurancePolicyNo		DECIMAL (10,2),
+insurancePolicyNo		INT,
 registration			DATE,
 PRIMARY KEY (truckID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID)
@@ -63,7 +63,7 @@ FOREIGN KEY (driverID) REFERENCES Driver(driverID)
 CREATE TABLE TruckDamageReport(
 damageReportID			INT NOT NULL AUTO_INCREMENT,
 truckID					INT NOT NULL,
-damageData				TEXT, -- NOT SURE!!
+damageData				TEXT, 
 damageDescription		TEXT,
 PRIMARY KEY (damageReportID),
 FOREIGN KEY (truckID) REFERENCES Truck(truckID)
@@ -75,9 +75,9 @@ supplierID				INT NOT NULL AUTO_INCREMENT,
 supplierName			VARCHAR(50) NOT NULL,
 contactPerson			VARCHAR(75),
 contactName				VARCHAR(75),
-supplierLongitude		DECIMAL(10,8) NOT NULL,
-supplierLatitude		DECIMAL(10,8) NOT NULL,
-supplierType			ENUM('manufacturer', 'distributor', 'wholesaler') NOT NULL,
+supplierLongitude		DECIMAL(11,8) NOT NULL,
+supplierLatitude		DECIMAL(10,8) NOT NULL, 
+supplierType			ENUM('MANUFACTURER', 'DISTRIBUTOR', 'WHOLESALER') NOT NULL,
 businessHours			VARCHAR(50),
 PRIMARY KEY (supplierID)
 );
@@ -131,7 +131,7 @@ FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
 -- Create Customer Table
 CREATE TABLE Customer(
 customerID				INT NOT NULL AUTO_INCREMENT,
-customerLongitude		DECIMAL(10,8) NOT NULL,
+customerLongitude		DECIMAL(11,8) NOT NULL,
 customerLatitude		DECIMAL(10,8) NOT NULL,
 customerName			VARCHAR(50) NOT NULL,
 typeOfStore				ENUM ('CHAIN','INDIVIDUAL') NOT NULL,
@@ -156,7 +156,7 @@ customerID				INT NOT NULL,
 trailerID				INT NOT NULL,
 loadWeight				INT,
 typeOfProduct			VARCHAR(50),
-deliveryType			VARCHAR(50),
+deliveryType			ENUM ('EXPEDITED', 'STANDARD', 'PRIORITY') DEFAULT 'STANDARD',
 PRIMARY KEY (shipmentID),
 FOREIGN KEY (customerID) REFERENCES Customer(customerID),
 FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID),
@@ -170,13 +170,12 @@ driverID				INT NOT NULL,
 shipmentID				INT NOT NULL,
 truckID					INT NOT NULL,
 trailerID				INT NOT NULL,
-pickupLongitude			DECIMAL(10,8) NOT NULL,
+pickupLongitude			DECIMAL(11,8) NOT NULL,
 pickupLattitude			DECIMAL(10,8) NOT NULL,
 pickupTime				DATETIME,
 PRIMARY KEY (routeID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID),
 FOREIGN KEY (truckID) REFERENCES Truck(truckID),
-FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID),
 FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID),
 FOREIGN KEY (shipmentID) REFERENCES Shipment(shipmentID)
 );
@@ -194,7 +193,7 @@ FOREIGN KEY (routeID) REFERENCES Route(routeID)
 CREATE TABLE Trips(
 tripID					INT NOT NULL AUTO_INCREMENT,
 routeID					INT NOT NULL,
-destinationLongitude	DECIMAL(10,8) NOT NULL,
+destinationLongitude	DECIMAL(11,8) NOT NULL,
 destinationLatitude		DECIMAL(10,8) NOT NULL,
 tripIndex				INT NOT NULL,
 PRIMARY KEY (tripID),
@@ -242,7 +241,7 @@ invoiceID				INT NOT NULL,
 totalAmount				DECIMAL(10, 2) NOT NULL,
 taxedAmount				DECIMAL(10, 2) NOT NULL,
 currency				VARCHAR(5) NOT NULL,
-paymentTerms			VARCHAR(10),
+paymentTerms			VARCHAR(20),
 PRIMARY KEY (invoiceTaxID),
 FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID)
 );
