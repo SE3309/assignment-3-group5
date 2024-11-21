@@ -1,5 +1,8 @@
 USE my_database;
 
+-- Note: ON DELETE CASCADE ensures that when a parent row is deleted, all related child rows are automatically removed
+-- while ON UPDATE CASCADE ensures that updates to the parent key are reflected in the child table to maintain referential integrity.
+
 -- Create Driver Table
 CREATE TABLE Driver(
 driverID				INT NOT NULL AUTO_INCREMENT,
@@ -13,7 +16,7 @@ age						INT,
 salary					DECIMAL (10,2), 
 employmentDate			DATE,
 workingStatus			ENUM ('ACTIVE','INACTIVE','ON LEAVE') DEFAULT 'ACTIVE',
-truckOwnedorAssigned	ENUM ('OWNED','ASSIGNED') DEFAULT 'ASSIGNED',
+truckOwnedorAssigned ENUM ('OWNED','ASSIGNED') DEFAULT 'ASSIGNED',
 PRIMARY KEY (driverID)
 );
 
@@ -24,6 +27,8 @@ phoneNumber				VARCHAR(10),
 phoneType				ENUM ('HOME', 'MOBILE') DEFAULT 'MOBILE',
 PRIMARY KEY (phoneID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID)
+					   ON DELETE CASCADE 
+					   ON UPDATE CASCADE
 );
 
 CREATE TABLE EmergencyInformation(
@@ -33,6 +38,8 @@ contanctName			VARCHAR(75),
 contactNumber			VARCHAR(10),
 PRIMARY KEY (emergencyContactID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID)
+					   ON DELETE CASCADE 
+					   ON UPDATE CASCADE
 );
 
 CREATE TABLE bankInformation(
@@ -43,6 +50,8 @@ branchNo				INT NOT NULL,
 accountNo				INT NOT NULL,
 PRIMARY KEY (accountID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID)
+					   ON DELETE CASCADE 
+					   ON UPDATE CASCADE
 );
 
 -- Create Truck Table
@@ -58,6 +67,8 @@ insurancePolicyNo		INT,
 registration			DATE,
 PRIMARY KEY (truckID),
 FOREIGN KEY (driverID) REFERENCES Driver(driverID)
+					   ON DELETE CASCADE 
+					   ON UPDATE CASCADE
 );
 
 CREATE TABLE TruckDamageReport(
@@ -67,6 +78,8 @@ damageData				TEXT,
 damageDescription		TEXT,
 PRIMARY KEY (damageReportID),
 FOREIGN KEY (truckID) REFERENCES Truck(truckID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE
 );
 
 -- Create Supplier Table
@@ -96,8 +109,12 @@ VIN						VARCHAR(17) UNIQUE,
 makeModelYear			VARCHAR(100),
 registration			DATE,
 PRIMARY KEY (trailerID),
-FOREIGN KEY (truckID) REFERENCES Truck(truckID),
+FOREIGN KEY (truckID) REFERENCES Truck(truckID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE,
 FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
+					     ON DELETE CASCADE 
+					     ON UPDATE CASCADE
 );
 
 CREATE TABLE TrailerDamageReport(
@@ -107,6 +124,8 @@ damageData				TEXT, -- NOT SURE!!
 damageDescription		TEXT,
 PRIMARY KEY (damageReportID),
 FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID)
+						ON DELETE CASCADE 
+						ON UPDATE CASCADE
 );
 
 CREATE TABLE SupplierContract(
@@ -117,6 +136,8 @@ contractEnd				DATE NOT NULL,
 productType				VARCHAR(50),
 PRIMARY KEY (contractID),
 FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE
 );
 
 CREATE TABLE SupplierContactInfo(
@@ -126,6 +147,8 @@ contactPerson			VARCHAR(75),
 contactNumber			VARCHAR(10),
 PRIMARY KEY (supplierContactInfoID),
 FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE
 );
 
 -- Create Customer Table
@@ -146,6 +169,8 @@ contactPerson			VARCHAR(75),
 contactNumber			VARCHAR(10),
 PRIMARY KEY (customerContactInfoID),
 FOREIGN KEY (customerID) REFERENCES Customer(customerID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE
 );
 
 -- Create Shipment Table
@@ -158,9 +183,15 @@ loadWeight				INT,
 typeOfProduct			VARCHAR(50),
 deliveryType			ENUM ('EXPEDITED', 'STANDARD', 'PRIORITY') DEFAULT 'STANDARD',
 PRIMARY KEY (shipmentID),
-FOREIGN KEY (customerID) REFERENCES Customer(customerID),
-FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID),
+FOREIGN KEY (customerID) REFERENCES Customer(customerID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE,
+FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE,
 FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID)
+						ON DELETE CASCADE 
+						ON UPDATE CASCADE
 );
 
 -- Create Routes Table
@@ -174,10 +205,18 @@ pickupLongitude			DECIMAL(11,8) NOT NULL,
 pickupLattitude			DECIMAL(10,8) NOT NULL,
 pickupTime				DATETIME,
 PRIMARY KEY (routeID),
-FOREIGN KEY (driverID) REFERENCES Driver(driverID),
-FOREIGN KEY (truckID) REFERENCES Truck(truckID),
-FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID),
+FOREIGN KEY (driverID) REFERENCES Driver(driverID)
+					   ON DELETE CASCADE 
+					   ON UPDATE CASCADE,
+FOREIGN KEY (truckID) REFERENCES Truck(truckID)					   
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE,
+FOREIGN KEY (trailerID) REFERENCES Trailer(trailerID)
+						ON DELETE CASCADE 
+						ON UPDATE CASCADE,
 FOREIGN KEY (shipmentID) REFERENCES Shipment(shipmentID)
+						 ON DELETE CASCADE 
+					     ON UPDATE CASCADE
 );
 
 CREATE TABLE ProofOfDelivery(
@@ -187,6 +226,8 @@ proofOfDelivery			BOOLEAN DEFAULT FALSE,
 PODNo					VARCHAR(20),
 PRIMARY KEY (podID),
 FOREIGN KEY (routeID) REFERENCES Route(routeID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE
 );
 
 -- Create Trips Table
@@ -198,6 +239,8 @@ destinationLatitude		DECIMAL(10,8) NOT NULL,
 tripIndex				INT NOT NULL,
 PRIMARY KEY (tripID),
 FOREIGN KEY (routeID) REFERENCES Route(routeID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE
 );
 
 -- Create Finance Table
@@ -210,6 +253,8 @@ paymentMethod			VARCHAR(50),
 paymentDate				DATE,
 PRIMARY KEY (entryID),
 FOREIGN KEY (truckID) REFERENCES Truck(truckID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE
 );
 
 CREATE TABLE Tax(
@@ -220,6 +265,8 @@ tax						DECIMAL(10,2) NOT NULL,
 taxRate					INT NOT NULL,
 PRIMARY KEY (taxID),
 FOREIGN KEY (entryID) REFERENCES Finance(entryID)
+					  ON DELETE CASCADE 
+					  ON UPDATE CASCADE
 );
 
 -- Create Invoice Table
@@ -231,8 +278,12 @@ invoiceNumber			VARCHAR(25) NOT NULL,
 invoiceDate				DATE NOT NULL,
 paymentDate				DATE,
 PRIMARY KEY (invoiceID),
-FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID),
+FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE,
 FOREIGN KEY (shipmentID) REFERENCES Shipment(shipmentID)
+						 ON DELETE CASCADE 
+						 ON UPDATE CASCADE
 );
 
 CREATE TABLE InvoiceTax(
@@ -244,4 +295,6 @@ currency				VARCHAR(5) NOT NULL,
 paymentTerms			VARCHAR(20),
 PRIMARY KEY (invoiceTaxID),
 FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID)
+						ON DELETE CASCADE 
+						ON UPDATE CASCADE
 );
