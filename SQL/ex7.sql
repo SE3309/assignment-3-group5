@@ -33,4 +33,4 @@ JOIN Supplier ON Shipment.supplierID = Supplier.supplierID;
 
 SELECT * 
 FROM CustomerShipmentDetails
-WHERE deliveryType = 'Expedited';  -- NEED TO CHANGE THIS IN THE SCHEMA AND CODE 
+WHERE deliveryType = 'Expedited'; 
