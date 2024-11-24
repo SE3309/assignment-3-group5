@@ -31,3 +31,20 @@ UNION ALL
 FROM TrailerDamageReport
 WHERE damageDescription IS NOT NULL
 ORDER BY ID, damageData);
+
+-- 5.5: SELECT-FROM-WHERE (COUNT & SUM)
+SELECT
+    S.typeOfProduct, 
+    COUNT(S.shipmentID) AS totalShipments, 
+    SUM(S.loadWeight) AS totalLoadWeight
+FROM Shipment S
+JOIN Route R ON S.shipmentID = R.shipmentID
+WHERE R.pickupTime BETWEEN '2000-01-01 00:00:00' AND '2024-01-31 23:59:59' -- set to a long range for timebeing (generally used for monthly tallying)
+GROUP BY S.typeOfProduct
+ORDER BY totalLoadWeight DESC;
+
+-- 5.6: SELECT-FROM-WHERE (SELCT DISTINCT OR INTERSECT)
+SELECT DISTINCT s.supplierName, t.trailerType, COUNT(t.trailerID) AS totalTrailers
+FROM Supplier s, Trailer t
+WHERE s.supplierID = t.supplierID
+GROUP BY s.supplierName, t.trailerType;
