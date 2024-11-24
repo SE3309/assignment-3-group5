@@ -21,12 +21,12 @@ AND NOT EXISTS (SELECT *
 				FROM Route r
 				JOIN Shipment s ON r.shipmentID=s.shipmentID
 				WHERE r.driverID=d.driverID
-				AND r.pickupTime>=DATE_SUB(CURDATE(), INTERVAL 2 YEAR))
+				AND r.pickupTime>=DATE_SUB(CURDATE(), INTERVAL 1 YEAR))
 AND DATEDIFF(CURDATE(),employmentDate)/365 > 2;
 
   
 -- 6.3: DELETE
--- removes all records from the ProofOfDelivery, Trips, Invoice, Route, Shipment, and Trailer tables associated with trailers with maxLoadWeight less than 2500
+-- removes all records from the ProofOfDelivery, Trips, Invoice, Route, Shipment, and Trailer tables associated with trailers with maxLoadWeight less than 15000
 DELETE ProofOfDelivery, Trips, Invoice, Route, Shipment, Trailer
 FROM Trailer
 LEFT JOIN Route ON Trailer.trailerID = Route.trailerID
@@ -34,10 +34,11 @@ LEFT JOIN ProofOfDelivery ON Route.routeID = ProofOfDelivery.routeID
 LEFT JOIN Trips ON Route.routeID = Trips.routeID
 LEFT JOIN Shipment ON Trailer.trailerID = Shipment.trailerID
 LEFT JOIN Invoice ON Shipment.shipmentID = Invoice.shipmentID
-WHERE Trailer.maxLoadWeight < 2500;
+WHERE Trailer.maxLoadWeight < 15000;
 
 
 -- USE prior and post deletion to check for values
+-- USE ALL TO CHECK FOR DELETION
 SELECT *
 FROM ProofOfDelivery;
 

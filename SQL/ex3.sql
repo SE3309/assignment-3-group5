@@ -1,10 +1,12 @@
+-- 3.1: INSERT commands, adds 5 tuples to all the 21 tables
+-- NOTE: All the following insertion commands from line 3 - line 176 are all the same and part of one command
 INSERT INTO Driver (licenseNumber, driverName, homeAddress, yearsOfExperience, numberOfDeliveries, email, age, salary, employmentDate, workingStatus, truckOwnedorAssigned)
 VALUES
 ('ON1234567890123', 'John Doe', '123 Main St, Toronto, ON', 10, 200, 'johndoe@trucking.com', 35, 60000.00, '2015-06-01', 'ACTIVE', 'ASSIGNED'),
-('ON9876543210987', 'Jane Smith', '456 Elm St, Ottawa, ON', 8, 180, 'janesmith@trucking.com', 29, 55000.00, '2017-09-15', 'ACTIVE', 'OWNNED'),
+('ON9876543210987', 'Jane Smith', '456 Elm St, Ottawa, ON', 8, 180, 'janesmith@trucking.com', 29, 55000.00, '2017-09-15', 'ACTIVE', 'OWNED'),
 ('ON4567890123456', 'Michael Brown', '789 Pine Rd, Kingston, ON', 15, 350, 'michaelbrown@trucking.com', 45, 75000.00, '2010-02-25', 'ACTIVE', 'ASSIGNED'),
 ('ON2345678901234', 'Emily Davis', '321 Oak Ln, Hamilton, ON', 12, 300, 'emilydavis@trucking.com', 38, 68000.00, '2012-08-10', 'ON LEAVE', 'ASSIGNED'),
-('ON3456789012345', 'Chris Wilson', '555 Maple Ave, London, ON', 5, 120, 'chriswilson@trucking.com', 27, 52000.00, '2019-01-20', 'ACTIVE', 'OWNNED');
+('ON3456789012345', 'Chris Wilson', '555 Maple Ave, London, ON', 5, 120, 'chriswilson@trucking.com', 27, 52000.00, '2019-01-20', 'ACTIVE', 'OWNED');
 
 INSERT INTO Truck (truckID, driverID, mileage, licencePlateNumber, VIN, makeModelYear, maxTowWeight, insurancePolicyNo, registration) 
 VALUES 
@@ -173,16 +175,24 @@ VALUES
 (4, 'Emily Supplier Contact', '9055554321'),
 (5, 'Chris Supplier Contact', '7055558765');
 
--- adds data (new tuples) to Route table for location and pickup time for Shipments for a specific supplier (here supplier 6)
+-- 3.2: INSERT command 2
+-- adds data (new tuples) to Route table for location and pickup time for Shipments for a specific supplier (here supplier C)
 INSERT INTO Route (driverID, shipmentID, truckID, trailerID, pickupLongitude, pickupLattitude, pickupTime)
-SELECT d.driverID, s.shipmentID, t.truckID, tr.trailerID, sp.customerLongitude, sp.customerLatitude, '2024-11-19 10:00:00'
+SELECT d.driverID, s.shipmentID, t.truckID, tr.trailerID, sp.supplierLongitude, sp.supplierLatitude, '2024-11-19 10:00:00'
 FROM Shipment s
 JOIN Trailer tr ON s.trailerID = tr.trailerID
 JOIN Truck t ON tr.truckID = t.truckID
 JOIN Driver d ON t.driverID = d.driverID
 JOIN Supplier sp ON s.supplierID = sp.supplierID
-WHERE sp.supplierName = 'Supplier 6';
+WHERE sp.supplierName = 'Supplier C';
 
+-- USE prior and post 5.1 insertion to check for new tuples
+-- Prior: 5 tuples
+-- Post: 6 tuples
+SELECT *
+FROM Route;
+
+-- 3.3: INSERT command 3
 -- Adds taxed amount and tax rate as 13% for any non insurance expense as insurance is not taxed
 INSERT INTO Tax (entryID, amount, tax, taxRate)
 SELECT f.entryID, f.totalAmount, f.totalAmount * 0.13, 13
@@ -194,4 +204,5 @@ WHERE NOT EXISTS (
         AND f2.expense = 'Insurance'
   );
 
-
+SELECT *
+FROM Tax;
