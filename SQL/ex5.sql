@@ -48,3 +48,22 @@ SELECT DISTINCT s.supplierName, t.trailerType, COUNT(t.trailerID) AS totalTraile
 FROM Supplier s, Trailer t
 WHERE s.supplierID = t.supplierID
 GROUP BY s.supplierName, t.trailerType;
+
+-- 5.7: SELECT-FROM-WHERE (RANK FUNCTION FROM EXTERNAL SOURCE)
+-- ranks active drivers based on number of deliveries in descending order
+SELECT 
+    driverName, 
+    numberOfDeliveries, 
+    RANK() OVER (ORDER BY numberOfDeliveries DESC) AS deliveryRank
+FROM Driver
+WHERE workingStatus = 'ACTIVE';
+
+-- 5.8: SELECT-FROM-WHERE (NOT EXISTS)
+-- get all drivers who do not have their banking information registered with the organization
+SELECT d.driverID, d.driverName, dp.phoneNumber, d.salary
+FROM Driver d
+LEFT JOIN DriverPhone dp ON d.driverID = dp.driverID
+WHERE NOT EXISTS (
+        SELECT * 
+        FROM bankInformation b 
+        WHERE b.driverID = d.driverID);
