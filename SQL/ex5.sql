@@ -1,4 +1,5 @@
 -- 5.1: SELECT-FROM-WHERE (Sub queries)
+-- get all active drivers who have completed more than 10 deliveries, with their total deliveries
 SELECT d.driverID, d.driverName, (SELECT COUNT(r.routeID)
 								  FROM Route r 
 								  WHERE r.driverID = d.driverID) AS totalDeliveries
@@ -9,6 +10,7 @@ WHERE d.workingStatus = 'ACTIVE'
        WHERE r.driverID = d.driverID) > 1;
        
 -- 5.2: SELECT-FROM-WHERE (Three table Join & ORDER BY)
+-- Get Trucks, Drivers, and Their Finance Expenses, Ordered by Total Amount
 SELECT t.truckID,t.licencePlateNumber, d.driverID, d.driverName, f.expense, f.totalAmount
 FROM Truck t, Driver d, Finance f
 WHERE t.driverID=d.driverID
@@ -16,6 +18,7 @@ WHERE t.driverID=d.driverID
 ORDER BY f.truckID,f.totalAmount; -- first orders by truckID and then orders by total amount
 
 -- 5.3: SELECT-FROM-WHERE (LEFT JOIN and GROUP BY)
+-- Get Total Routes for Each Truck and Driver
 SELECT t.truckID, t.licencePlateNumber, d.driverID, d.driverName
 FROM Driver d LEFT JOIN Truck t ON t.driverID = d.driverID
 			  LEFT JOIN Route r ON r.truckID = t.truckID
@@ -23,6 +26,7 @@ WHERE d.workingStatus = 'ACTIVE'
 GROUP BY d.driverID, t.truckID, t.licencePlateNumber, d.driverName;
 
 -- 5.4: SELECT-FROM-WHERE (UNION AND ORDER BY)
+-- Get all truck and trailer damages with deescription ordered by the ID 
 (SELECT truckID AS ID, damageData, damageDescription, 'Truck' AS VehicleType 
 FROM TruckDamageReport
 WHERE damageDescription IS NOT NULL)
@@ -33,8 +37,9 @@ WHERE damageDescription IS NOT NULL
 ORDER BY ID, damageData);
 
 -- 5.5: SELECT-FROM-WHERE (COUNT & SUM)
+-- get all the product types with its coresponding frequency andn total load weight for a specific datte and time range
 SELECT
-    S.typeOfProduct, 
+	S.typeOfProduct, 
     COUNT(S.shipmentID) AS totalShipments, 
     SUM(S.loadWeight) AS totalLoadWeight
 FROM Shipment S
@@ -44,11 +49,12 @@ GROUP BY S.typeOfProduct
 ORDER BY totalLoadWeight DESC;
 
 -- 5.6: SELECT-FROM-WHERE (SELCT DISTINCT OR INTERSECT)
+-- get all unique supplier names and their trailer types with total owned trailer count
 SELECT DISTINCT s.supplierName, t.trailerType, COUNT(t.trailerID) AS totalTrailers
 FROM Supplier s, Trailer t
 WHERE s.supplierID = t.supplierID
 GROUP BY s.supplierName, t.trailerType;
-
+    
 -- 5.7: SELECT-FROM-WHERE (RANK FUNCTION FROM EXTERNAL SOURCE)
 -- ranks active drivers based on number of deliveries in descending order
 SELECT 
@@ -63,7 +69,7 @@ WHERE workingStatus = 'ACTIVE';
 SELECT d.driverID, d.driverName, dp.phoneNumber, d.salary
 FROM Driver d
 LEFT JOIN DriverPhone dp ON d.driverID = dp.driverID
-WHERE NOT EXISTS (
+WHERE EXISTS (
         SELECT * 
         FROM bankInformation b 
         WHERE b.driverID = d.driverID);
